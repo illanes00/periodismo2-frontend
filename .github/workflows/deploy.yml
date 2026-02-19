@@ -1,0 +1,44 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, periodismo2]
+    steps:
+      - name: Deploy frontend
+        env:
+          SSH_PASS: ${{ secrets.PROD_SSH_PASSWORD }}
+          SSH_HOST: 74.208.112.19
+          SSH_USER: illanes00
+        run: |
+          if [ -z "$SSH_PASS" ]; then
+            echo "Missing PROD_SSH_PASSWORD secret" >&2
+            exit 1
+          fi
+          sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" ' \
+            set -euo pipefail; \
+            cd /srv/projects/periodismo2-frontend; \
+            git fetch origin; \
+            git reset --hard origin/main; \
+            npm ci; \
+            NEXT_PUBLIC_API_URL=https://api.periodismo2.cl npm run build; \
+            sudo systemctl restart periodismo2-frontend.service; \
+            echo "Frontend deploy OK $(date)" \
+          '
+
+      - name: Verify deployment
+        env:
+          SSH_PASS: ${{ secrets.PROD_SSH_PASSWORD }}
+          SSH_HOST: 74.208.112.19
+          SSH_USER: illanes00
+        run: |
+          sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" ' \
+            set -euo pipefail; \
+            systemctl is-active periodismo2-frontend.service || exit 1; \
+            sleep 3; \
+            curl -sf http://localhost:3115/ || exit 1; \
+            echo "Frontend health check passed" \
+          '

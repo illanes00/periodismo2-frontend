@@ -1,0 +1,25 @@
+[Unit]
+Description=Periodismo2 Frontend – Next.js SSR
+After=network.target periodismo2-api.service
+Requires=periodismo2.slice
+
+[Service]
+Slice=periodismo2.slice
+Type=simple
+User=illanes00
+Group=illanes00
+WorkingDirectory=/srv/projects/periodismo2-frontend
+Environment=NODE_ENV=production
+Environment=PORT=3115
+Environment=NEXT_PUBLIC_API_URL=https://api.periodismo2.cl
+ExecStart=/home/illanes00/.nvm/versions/node/v22.19.0/bin/node .next/standalone/server.js
+Restart=on-failure
+RestartSec=5
+CPUQuota=25%
+MemoryMax=384M
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
