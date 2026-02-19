@@ -1,15 +1,22 @@
 @import 'tailwindcss';
 
+/* Use class-based dark mode (.dark on <html>) instead of OS prefers-color-scheme */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-serif: 'Merriweather', Georgia, serif;
 
   --color-brand-50: #fef2f2;
   --color-brand-100: #fee2e2;
+  --color-brand-200: #fecaca;
+  --color-brand-300: #fca5a5;
+  --color-brand-400: #f87171;
   --color-brand-500: #ef4444;
   --color-brand-600: #dc2626;
   --color-brand-700: #b91c1c;
   --color-brand-800: #991b1b;
+  --color-brand-900: #7f1d1d;
 }
 
 /* Prose-like article body styling */
@@ -56,4 +63,20 @@ html {
 .dark .skeleton {
   background: linear-gradient(90deg, #262626 25%, #333 50%, #262626 75%);
   background-size: 200% 100%;
+}
+
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Bottom nav padding on mobile to prevent content being hidden behind it */
+@media (max-width: 767px) {
+  main {
+    padding-bottom: 4.5rem;
+  }
 }

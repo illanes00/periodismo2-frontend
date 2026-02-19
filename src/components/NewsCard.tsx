@@ -22,7 +22,85 @@ function extractDomain(url: string | null): string {
   }
 }
 
-export function NewsCard({ item }: { item: NewsItem }) {
+type CardVariant = 'default' | 'compact' | 'horizontal'
+
+export function NewsCard({ item, variant = 'default' }: { item: NewsItem; variant?: CardVariant }) {
+  if (variant === 'compact') {
+    return (
+      <Link
+        href={`/article/${item.id}`}
+        className="group flex flex-col gap-1.5 rounded-lg border border-transparent px-3 py-2.5 transition hover:border-neutral-200 hover:bg-neutral-50 dark:hover:border-neutral-800 dark:hover:bg-neutral-900"
+      >
+        <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-500">
+          <span className="rounded bg-neutral-100 px-1.5 py-0.5 font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+            {extractDomain(item.source)}
+          </span>
+          {item.category && (
+            <span className="rounded bg-brand-50 px-1.5 py-0.5 font-medium text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
+              {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+            </span>
+          )}
+          {item.published_ts && (
+            <time className="text-neutral-400 dark:text-neutral-600">{timeAgo(item.published_ts)}</time>
+          )}
+        </div>
+        <h2 className="line-clamp-2 text-sm font-bold leading-snug text-neutral-900 transition group-hover:text-brand-700 dark:text-neutral-100 dark:group-hover:text-brand-500">
+          {item.title}
+        </h2>
+      </Link>
+    )
+  }
+
+  if (variant === 'horizontal') {
+    return (
+      <Link
+        href={`/article/${item.id}`}
+        className="group flex gap-4 overflow-hidden rounded-xl border border-neutral-200/80 bg-white p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:border-neutral-800/80 dark:bg-neutral-900"
+      >
+        {/* Thumbnail */}
+        <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 sm:h-28 sm:w-28 dark:bg-neutral-800">
+          {item.img ? (
+            <Image
+              src={item.img}
+              alt=""
+              fill
+              sizes="112px"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-850">
+              <span className="text-lg text-neutral-300 dark:text-neutral-600">P2</span>
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex min-w-0 flex-1 flex-col justify-center">
+          <div className="mb-1.5 flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-neutral-500">
+            <span className="rounded bg-neutral-100 px-1.5 py-0.5 font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+              {extractDomain(item.source)}
+            </span>
+            {item.category && (
+              <span className="rounded bg-brand-50 px-1.5 py-0.5 font-medium text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
+                {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+              </span>
+            )}
+            {item.published_ts && (
+              <time className="text-neutral-400 dark:text-neutral-600">{timeAgo(item.published_ts)}</time>
+            )}
+          </div>
+          <h2 className="mb-1 line-clamp-2 font-serif text-sm font-bold leading-snug text-neutral-900 transition group-hover:text-brand-700 sm:text-base dark:text-neutral-100 dark:group-hover:text-brand-500">
+            {item.title}
+          </h2>
+          <p className="line-clamp-2 hidden text-xs leading-relaxed text-neutral-500 sm:block dark:text-neutral-400">
+            {item.summary}
+          </p>
+        </div>
+      </Link>
+    )
+  }
+
+  // Default variant
   return (
     <Link
       href={`/article/${item.id}`}
@@ -45,10 +123,15 @@ export function NewsCard({ item }: { item: NewsItem }) {
         </div>
       )}
       <div className="flex flex-1 flex-col p-4">
-        <div className="mb-2 flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-500">
+        <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-neutral-500">
           <span className="rounded bg-neutral-100 px-1.5 py-0.5 font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
             {extractDomain(item.source)}
           </span>
+          {item.category && (
+            <span className="rounded bg-brand-50 px-1.5 py-0.5 font-medium text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
+              {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+            </span>
+          )}
           {item.published_ts && (
             <time className="text-neutral-400 dark:text-neutral-600">{timeAgo(item.published_ts)}</time>
           )}

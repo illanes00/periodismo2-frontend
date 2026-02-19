@@ -21,6 +21,12 @@ export function Footer() {
             <a href="https://github.com/illanes00/periodismo2-frontend" target="_blank" rel="noopener noreferrer" className="transition hover:text-neutral-900 dark:hover:text-neutral-200">
               GitHub
             </a>
+            <a href="https://api.periodismo2.cl/admin/" target="_blank" rel="noopener noreferrer" className="transition hover:text-neutral-900 dark:hover:text-neutral-200">
+              Admin
+            </a>
+            <a href="https://api.periodismo2.cl/docs" target="_blank" rel="noopener noreferrer" className="transition hover:text-neutral-900 dark:hover:text-neutral-200">
+              API
+            </a>
           </div>
         </div>
       </div>

@@ -2,7 +2,11 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 import { getArticle } from '@/lib/api'
+import { EntityTags } from '@/components/EntityTags'
+import { RelatedArticles } from '@/components/RelatedArticles'
+import { ShareButtons } from '@/components/ShareButtons'
 
 export const revalidate = 300
 
@@ -117,6 +121,16 @@ export default async function ArticlePage({ params }: Props) {
               </>
             )}
           </div>
+
+          {/* Share buttons */}
+          <div className="mt-4">
+            <ShareButtons title={article.title} />
+          </div>
+
+          {/* Entity tags */}
+          <Suspense fallback={null}>
+            <EntityTags articleId={id} />
+          </Suspense>
         </header>
 
         {/* Hero image */}
@@ -146,6 +160,11 @@ export default async function ArticlePage({ params }: Props) {
             p.trim() ? <p key={i}>{p}</p> : null
           )}
         </div>
+
+        {/* Related articles */}
+        <Suspense fallback={null}>
+          <RelatedArticles articleId={id} />
+        </Suspense>
 
         {/* Bottom bar */}
         <div className="mt-10 flex items-center justify-between border-t border-neutral-200 pt-6 dark:border-neutral-800">

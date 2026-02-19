@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Navbar } from '@/components/Navbar'
 import { Ticker } from '@/components/Ticker'
 import { Footer } from '@/components/Footer'
+import { MobileBottomNav } from '@/components/MobileBottomNav'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -35,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Theme detection — static content, no user input */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem('theme');var d=t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.classList.toggle('dark',d)}catch(e){}`,
+            __html: `try{var t=localStorage.getItem('theme');var d=t==='dark';document.documentElement.classList.toggle('dark',d)}catch(e){}`,
           }}
         />
       </head>
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <Footer />
+        <MobileBottomNav />
       </body>
     </html>
   )
