@@ -11,7 +11,7 @@ Group=illanes00
 WorkingDirectory=/srv/projects/periodismo2-frontend
 Environment=NODE_ENV=production
 Environment=PORT=3115
-Environment=NEXT_PUBLIC_API_URL=https://api.periodismo2.cl
+Environment=NEXT_PUBLIC_API_URL=http://127.0.0.1:8117
 ExecStart=/home/illanes00/.nvm/versions/node/v22.19.0/bin/node .next/standalone/server.js
 Restart=on-failure
 RestartSec=5
