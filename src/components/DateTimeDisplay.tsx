@@ -7,9 +7,9 @@ const TZ = 'America/Santiago'
 function formatDate(date: Date): string {
   return date.toLocaleDateString('es-CL', {
     timeZone: TZ,
-    weekday: 'long',
+    weekday: 'short',
     day: 'numeric',
-    month: 'long',
+    month: 'short',
     year: 'numeric',
   })
 }
@@ -35,7 +35,7 @@ export function DateTimeDisplay() {
   if (!now) return null
 
   return (
-    <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+    <div className="flex shrink-0 items-center gap-2 whitespace-nowrap text-xs text-neutral-500 dark:text-neutral-400">
       <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
       </svg>
