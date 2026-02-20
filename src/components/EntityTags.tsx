@@ -49,6 +49,14 @@ function typeIcon(type: string) {
   }
 }
 
+const TYPE_ORDER = ['person', 'org', 'place', 'event'] as const
+const TYPE_LABELS: Record<string, string> = {
+  person: 'Personas',
+  org: 'Instituciones',
+  place: 'Lugares',
+  event: 'Eventos',
+}
+
 interface EntityTagsProps {
   articleId: string
 }
@@ -60,18 +68,44 @@ export async function EntityTags({ articleId }: EntityTagsProps) {
     return null
   }
 
+  // Group by type
+  const grouped: Record<string, typeof entities> = {}
+  for (const entity of entities) {
+    const type = entity.type || 'other'
+    if (!grouped[type]) grouped[type] = []
+    grouped[type].push(entity)
+  }
+
+  // Sort by TYPE_ORDER, then any remaining
+  const orderedTypes = [
+    ...TYPE_ORDER.filter((t) => grouped[t]),
+    ...Object.keys(grouped).filter((t) => !TYPE_ORDER.includes(t as any)),
+  ]
+
   return (
-    <div className="mt-4 flex flex-wrap gap-2">
-      {entities.map((entity) => (
-        <Link
-          key={entity.id}
-          href={`/entities/${entity.id}`}
-          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${typeBadgeStyle(entity.type)}`}
-        >
-          {typeIcon(entity.type)}
-          {entity.name}
-        </Link>
-      ))}
+    <div className="mt-8 border-t border-neutral-200 pt-6 dark:border-neutral-800">
+      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+        Temas relacionados
+      </h3>
+      <div className="space-y-3">
+        {orderedTypes.map((type) => (
+          <div key={type} className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-medium text-neutral-400 dark:text-neutral-500 w-24 shrink-0">
+              {TYPE_LABELS[type] || 'Otros'}
+            </span>
+            {grouped[type].map((entity) => (
+              <Link
+                key={entity.id}
+                href={`/entities/${entity.id}`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${typeBadgeStyle(entity.type)}`}
+              >
+                {typeIcon(entity.type)}
+                {entity.name}
+              </Link>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

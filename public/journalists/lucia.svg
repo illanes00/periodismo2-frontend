@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg-lucia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="100" fill="url(#bg-lucia)"/>
+  <!-- Neck -->
+  <rect x="84" y="130" width="32" height="22" rx="5" fill="#fde4c8"/>
+  <!-- Shoulders -->
+  <ellipse cx="100" cy="175" rx="52" ry="28" fill="#1e1b4b"/>
+  <!-- Turtleneck -->
+  <rect x="82" y="148" width="36" height="12" rx="4" fill="#1e1b4b"/>
+  <!-- Face -->
+  <ellipse cx="100" cy="100" rx="40" ry="46" fill="#fde4c8"/>
+  <!-- Hair (elegant updo with side strands) -->
+  <ellipse cx="100" cy="65" rx="42" ry="28" fill="#8b4513"/>
+  <!-- Hair bun -->
+  <circle cx="100" cy="50" r="18" fill="#8b4513"/>
+  <ellipse cx="100" cy="48" rx="15" ry="12" fill="#a0522d"/>
+  <!-- Side strands -->
+  <path d="M60 78 Q58 100 62 115" fill="none" stroke="#8b4513" stroke-width="8" stroke-linecap="round"/>
+  <path d="M140 78 Q142 100 138 115" fill="none" stroke="#8b4513" stroke-width="8" stroke-linecap="round"/>
+  <!-- Eyes (elegant) -->
+  <ellipse cx="82" cy="100" rx="6" ry="4" fill="white"/>
+  <ellipse cx="118" cy="100" rx="6" ry="4" fill="white"/>
+  <circle cx="83" cy="100" r="3" fill="#4a3728"/>
+  <circle cx="119" cy="100" r="3" fill="#4a3728"/>
+  <circle cx="84" cy="99" r="1" fill="white"/>
+  <circle cx="120" cy="99" r="1" fill="white"/>
+  <!-- Elegant thin eyebrows -->
+  <path d="M74 93 Q82 89 90 93" fill="none" stroke="#8b4513" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M110 93 Q118 89 126 93" fill="none" stroke="#8b4513" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Nose -->
+  <path d="M98 106 Q100 112 102 106" fill="none" stroke="#e0c9a8" stroke-width="1.5"/>
+  <!-- Slight sophisticated smile -->
+  <path d="M90 119 Q100 125 110 119" fill="none" stroke="#c4756e" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- Small earrings -->
+  <circle cx="60" cy="106" r="3" fill="#c084fc"/>
+  <circle cx="140" cy="106" r="3" fill="#c084fc"/>
+</svg>

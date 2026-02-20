@@ -1,6 +1,5 @@
-import type { Entity, EntityDetail, HomeNews, NewsItem, NewsItemDetail, PaginatedNews, RecommendedNews, SourceCount, TrendingTopic } from './types'
+import type { Entity, EntityDetail, HomeNews, JournalistInfo, NewsItem, NewsItemDetail, PaginatedNews, RecommendedNews, TrendingTopic } from './types'
 
-// Server-side uses internal URL for performance; client-side must use public URL
 const API_PUBLIC = 'https://api.periodismo2.cl'
 const API_INTERNAL = process.env.API_URL || API_PUBLIC
 const isServer = typeof window === 'undefined'
@@ -21,6 +20,14 @@ export async function getHomeNews(country = 'CL'): Promise<HomeNews> {
   return fetchAPI<HomeNews>(`/news/home?country=${country}`, 300)
 }
 
+export async function getTopStories(limit = 7): Promise<NewsItem[]> {
+  try {
+    return await fetchAPI<NewsItem[]>(`/news/top?limit=${limit}`, 300)
+  } catch {
+    return []
+  }
+}
+
 export async function getRecommendedNews(country = 'CL'): Promise<RecommendedNews> {
   return fetchAPI<RecommendedNews>(`/news/recommended?country=${country}`, 300)
 }
@@ -28,13 +35,11 @@ export async function getRecommendedNews(country = 'CL'): Promise<RecommendedNew
 export async function getLatestNews(
   limit = 20,
   before?: string,
-  source?: string,
   country?: string,
   category?: string,
 ): Promise<PaginatedNews> {
   const params = new URLSearchParams({ limit: String(limit) })
   if (before) params.set('before', before)
-  if (source) params.set('source', source)
   if (country) params.set('country', country)
   if (category) params.set('category', category)
   return fetchAPI<PaginatedNews>(`/news/latest?${params}`, 300)
@@ -54,15 +59,23 @@ export async function searchNews(
   return fetchAPI<PaginatedNews>(`/news/search/?${params}`)
 }
 
-export async function getSources(): Promise<SourceCount[]> {
-  return fetchAPI<SourceCount[]>('/sources', 300)
+export async function getJournalists(): Promise<JournalistInfo[]> {
+  try {
+    return await fetchAPI<JournalistInfo[]>('/journalists', 300)
+  } catch {
+    return []
+  }
+}
+
+export async function getJournalistDetail(slug: string): Promise<{ journalist: JournalistInfo; articles: NewsItem[] }> {
+  return fetchAPI(`/journalists/${slug}`, 300)
 }
 
 export async function getRelatedArticles(id: string, limit = 5): Promise<NewsItem[]> {
   try {
     return await fetchAPI<NewsItem[]>(`/news/${id}/related?limit=${limit}`, 300)
   } catch {
-    return [] // graceful fallback if endpoint not available yet
+    return []
   }
 }
 

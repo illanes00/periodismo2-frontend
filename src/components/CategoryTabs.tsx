@@ -6,10 +6,10 @@ import { NewsCard } from './NewsCard'
 
 const CATEGORIES = [
   { slug: '', label: 'Todas' },
-  { slug: 'politica', label: 'Politica' },
-  { slug: 'economia', label: 'Economia' },
+  { slug: 'politica', label: 'Política' },
+  { slug: 'economia', label: 'Economía' },
   { slug: 'deportes', label: 'Deportes' },
-  { slug: 'tecnologia', label: 'Tecnologia' },
+  { slug: 'tecnologia', label: 'Tecnología' },
   { slug: 'ciencia', label: 'Ciencia' },
   { slug: 'entretenimiento', label: 'Entretenimiento' },
   { slug: 'salud', label: 'Salud' },
@@ -48,7 +48,7 @@ export function CategoryTabs() {
       {/* Tab bar */}
       <div className="mb-6 flex items-center gap-3">
         <h2 className="shrink-0 text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-          Categorias
+          Categorías
         </h2>
         <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
       </div>
@@ -92,7 +92,7 @@ export function CategoryTabs() {
       ) : (
         <div className="py-12 text-center">
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            No hay noticias en esta categoria.
+            No hay noticias en esta categoría.
           </p>
         </div>
       )}

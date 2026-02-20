@@ -140,6 +140,7 @@ export default async function EntityDetailPage({ params }: Props) {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                   </svg>
                   Ultima mencion: {new Date(entity.last_seen).toLocaleDateString('es-CL', {
+                    timeZone: 'America/Santiago',
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',

@@ -5,8 +5,10 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { getArticle } from '@/lib/api'
 import { EntityTags } from '@/components/EntityTags'
+import { JournalistAvatar } from '@/components/JournalistAvatar'
 import { RelatedArticles } from '@/components/RelatedArticles'
 import { ShareButtons } from '@/components/ShareButtons'
+import { ArticleBody } from '@/components/ArticleBody'
 
 export const revalidate = 300
 
@@ -36,6 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 function formatDate(ts: string | null): string {
   if (!ts) return ''
   return new Date(ts).toLocaleDateString('es-CL', {
+    timeZone: 'America/Santiago',
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -43,15 +46,6 @@ function formatDate(ts: string | null): string {
     hour: '2-digit',
     minute: '2-digit',
   })
-}
-
-function extractDomain(url: string | null): string {
-  if (!url) return ''
-  try {
-    return new URL(url).hostname.replace('www.', '')
-  } catch {
-    return ''
-  }
 }
 
 export default async function ArticlePage({ params }: Props) {
@@ -63,7 +57,6 @@ export default async function ArticlePage({ params }: Props) {
     notFound()
   }
 
-  // JSON-LD structured data — sourced from our own API, not user input
   const jsonLdScript = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
@@ -71,6 +64,9 @@ export default async function ArticlePage({ params }: Props) {
     description: article.summary,
     image: article.img || undefined,
     datePublished: article.published_ts,
+    author: article.journalist_name
+      ? { '@type': 'Person', name: article.journalist_name }
+      : undefined,
     publisher: { '@type': 'Organization', name: 'Periodismo2' },
   })
 
@@ -96,28 +92,28 @@ export default async function ArticlePage({ params }: Props) {
           </h1>
 
           <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400">
-            {article.published_ts && (
-              <time className="flex items-center gap-1.5">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-                {formatDate(article.published_ts)}
-              </time>
+            {article.journalist_name && (
+              <span className="inline-flex items-center gap-2 font-medium text-neutral-700 dark:text-neutral-300">
+                <JournalistAvatar config={article.journalist_avatar} size="md" />
+                <span>
+                  <span className="block text-sm font-semibold">{article.journalist_name}</span>
+                  {article.journalist_bio && (
+                    <span className="block text-xs font-normal text-neutral-500 dark:text-neutral-400">
+                      {article.journalist_bio}
+                    </span>
+                  )}
+                </span>
+              </span>
             )}
-            {article.source && (
+            {article.published_ts && (
               <>
                 <span className="text-neutral-300 dark:text-neutral-700">&bull;</span>
-                <a
-                  href={article.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-medium text-brand-600 transition hover:text-brand-700 dark:text-brand-500 dark:hover:text-brand-400"
-                >
-                  {extractDomain(article.source)}
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                <time className="flex items-center gap-1.5">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                   </svg>
-                </a>
+                  {formatDate(article.published_ts)}
+                </time>
               </>
             )}
           </div>
@@ -126,25 +122,44 @@ export default async function ArticlePage({ params }: Props) {
           <div className="mt-4">
             <ShareButtons title={article.title} />
           </div>
-
-          {/* Entity tags */}
-          <Suspense fallback={null}>
-            <EntityTags articleId={id} />
-          </Suspense>
         </header>
 
         {/* Hero image */}
         {article.img && (
-          <div className="relative -mx-4 mb-8 aspect-video overflow-hidden rounded-xl bg-neutral-100 sm:mx-0 dark:bg-neutral-800">
-            <Image
-              src={article.img}
-              alt=""
-              fill
-              sizes="(max-width: 768px) 100vw, 768px"
-              className="object-cover"
-              priority
-            />
-          </div>
+          <figure className="-mx-4 mb-8 sm:mx-0">
+            <div className="relative aspect-video overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
+              <Image
+                src={article.img}
+                alt={article.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 768px"
+                className="object-cover"
+                priority
+              />
+            </div>
+            {article.img_credit && (
+              <figcaption className="mt-1.5 text-right text-xs text-neutral-400 dark:text-neutral-500">
+                Foto:{' '}
+                <a
+                  href={article.img_credit.profile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-neutral-300 underline-offset-2 transition hover:text-neutral-600 dark:decoration-neutral-600 dark:hover:text-neutral-300"
+                >
+                  {article.img_credit.name}
+                </a>
+                {' / '}
+                <a
+                  href={article.img_credit.unsplash_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-neutral-300 underline-offset-2 transition hover:text-neutral-600 dark:decoration-neutral-600 dark:hover:text-neutral-300"
+                >
+                  Unsplash
+                </a>
+              </figcaption>
+            )}
+          </figure>
         )}
 
         {/* Summary */}
@@ -155,11 +170,12 @@ export default async function ArticlePage({ params }: Props) {
         )}
 
         {/* Body */}
-        <div className="article-body">
-          {article.body.split('\n').map((p, i) =>
-            p.trim() ? <p key={i}>{p}</p> : null
-          )}
-        </div>
+        <ArticleBody body={article.body} />
+
+        {/* Entity tags — grouped by type at bottom */}
+        <Suspense fallback={null}>
+          <EntityTags articleId={id} />
+        </Suspense>
 
         {/* Related articles */}
         <Suspense fallback={null}>
@@ -174,18 +190,11 @@ export default async function ArticlePage({ params }: Props) {
           >
             &larr; Más noticias
           </Link>
-          {article.source && (
-            <a
-              href={article.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700"
-            >
-              Leer en fuente original
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-              </svg>
-            </a>
+          {article.journalist_slug && (
+            <span className="inline-flex items-center gap-2 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+              <JournalistAvatar config={article.journalist_avatar} size="sm" />
+              Más de {article.journalist_name}
+            </span>
           )}
         </div>
       </article>

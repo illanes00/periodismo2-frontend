@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg-sofia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="100" fill="url(#bg-sofia)"/>
+  <!-- Neck -->
+  <rect x="82" y="130" width="36" height="25" rx="5" fill="#d4a574"/>
+  <!-- Shoulders -->
+  <ellipse cx="100" cy="175" rx="55" ry="30" fill="#1e1b4b"/>
+  <!-- Collar -->
+  <path d="M75 155 L100 170 L125 155" fill="none" stroke="#c4b5fd" stroke-width="2"/>
+  <!-- Face -->
+  <ellipse cx="100" cy="100" rx="42" ry="48" fill="#d4a574"/>
+  <!-- Hair (long dark) -->
+  <ellipse cx="100" cy="75" rx="48" ry="40" fill="#1a1a2e"/>
+  <rect x="52" y="75" width="20" height="65" rx="10" fill="#1a1a2e"/>
+  <rect x="128" y="75" width="20" height="65" rx="10" fill="#1a1a2e"/>
+  <!-- Bangs -->
+  <path d="M60 80 Q80 60 100 72 Q120 60 140 80" fill="#1a1a2e"/>
+  <!-- Eyes -->
+  <ellipse cx="82" cy="100" rx="6" ry="4" fill="white"/>
+  <ellipse cx="118" cy="100" rx="6" ry="4" fill="white"/>
+  <circle cx="83" cy="100" r="3" fill="#2d1b0e"/>
+  <circle cx="119" cy="100" r="3" fill="#2d1b0e"/>
+  <circle cx="84" cy="99" r="1" fill="white"/>
+  <circle cx="120" cy="99" r="1" fill="white"/>
+  <!-- Eyebrows -->
+  <path d="M74 92 Q82 88 90 92" fill="none" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round"/>
+  <path d="M110 92 Q118 88 126 92" fill="none" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round"/>
+  <!-- Nose -->
+  <path d="M98 105 Q100 112 102 105" fill="none" stroke="#b8956a" stroke-width="1.5"/>
+  <!-- Mouth -->
+  <path d="M88 118 Q100 126 112 118" fill="#c4756e" stroke="#b0635c" stroke-width="0.5"/>
+  <!-- Earrings -->
+  <circle cx="58" cy="108" r="3" fill="#fbbf24"/>
+  <circle cx="142" cy="108" r="3" fill="#fbbf24"/>
+</svg>

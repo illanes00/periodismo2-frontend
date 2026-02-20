@@ -5,6 +5,7 @@ import type { NewsItem } from '@/lib/types'
 import { NewsCard } from './NewsCard'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.periodismo2.cl'
+const MAX_AUTO_LOADS = 3
 
 interface InfiniteNewsFeedProps {
   /** IDs of news items already shown on the page, to avoid duplicates */
@@ -17,6 +18,7 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [initialLoaded, setInitialLoaded] = useState(false)
+  const [autoLoadCount, setAutoLoadCount] = useState(0)
   const observerRef = useRef<HTMLDivElement>(null)
   const excludeSet = useRef(new Set(excludeIds))
 
@@ -32,11 +34,11 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
       const newItems = (data.items || []).filter(
         (item: NewsItem) => !excludeSet.current.has(item.id)
       )
-      // Add new item IDs to the exclude set
       newItems.forEach((item: NewsItem) => excludeSet.current.add(item.id))
       setItems((prev) => [...prev, ...newItems])
       setCursor(data.next_cursor || null)
       setHasMore(!!data.next_cursor)
+      setAutoLoadCount((c) => c + 1)
     } catch {
       setHasMore(false)
     } finally {
@@ -52,8 +54,10 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
     }
   }, [initialLoaded, fetchMore])
 
-  // Intersection observer for infinite scroll
+  // Intersection observer for auto-scroll (limited to MAX_AUTO_LOADS)
   useEffect(() => {
+    if (autoLoadCount >= MAX_AUTO_LOADS) return
+
     const el = observerRef.current
     if (!el) return
 
@@ -67,7 +71,9 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [hasMore, loading, cursor, fetchMore])
+  }, [hasMore, loading, cursor, fetchMore, autoLoadCount])
+
+  const showLoadMoreButton = hasMore && autoLoadCount >= MAX_AUTO_LOADS && !loading
 
   return (
     <section>
@@ -102,8 +108,23 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
         </div>
       )}
 
-      {/* Infinite scroll trigger */}
-      <div ref={observerRef} className="h-px" />
+      {/* Auto-scroll trigger (only active during first MAX_AUTO_LOADS loads) */}
+      {autoLoadCount < MAX_AUTO_LOADS && <div ref={observerRef} className="h-px" />}
+
+      {/* Manual "Load more" button after auto-loads exhausted */}
+      {showLoadMoreButton && (
+        <div className="mt-8 text-center">
+          <button
+            onClick={() => fetchMore(cursor)}
+            className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 bg-white px-6 py-2.5 text-sm font-medium text-neutral-700 transition hover:border-neutral-400 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-800"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+            </svg>
+            Cargar mas noticias
+          </button>
+        </div>
+      )}
 
       {/* End state */}
       {!hasMore && items.length > 0 && (

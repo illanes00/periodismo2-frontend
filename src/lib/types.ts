@@ -2,13 +2,15 @@ export interface NewsItem {
   id: string
   title: string
   summary: string
-  url: string
-  source: string | null
   img: string | null
   bot_name: string | null
   published_ts: string | null
   country: string | null
   category: string | null
+  journalist_name: string | null
+  journalist_slug: string | null
+  journalist_photo_url: string | null
+  is_rewritten: boolean
 }
 
 export interface HomeNews {
@@ -16,11 +18,20 @@ export interface HomeNews {
   international: NewsItem[]
 }
 
+export interface ImageCredit {
+  name: string
+  profile: string
+  unsplash_url: string
+}
+
 export interface NewsItemDetail extends NewsItem {
   body: string
   entities: unknown
   sentiment: number | null
   ingest_ts: string | null
+  journalist_bio: string | null
+  journalist_avatar: AvatarConfig | null
+  img_credit: ImageCredit | null
 }
 
 export interface PaginatedNews {
@@ -28,9 +39,23 @@ export interface PaginatedNews {
   next_cursor: string | null
 }
 
-export interface SourceCount {
-  source: string
-  count: number
+export interface AvatarConfig {
+  skin?: string
+  hair?: string
+  accessory?: string
+  bg_color?: string
+}
+
+export interface JournalistInfo {
+  slug: string
+  name: string
+  bio: string
+  role: string
+  avatar_config: AvatarConfig
+  photo_url: string | null
+  specialties: string[]
+  is_active: boolean
+  articles_written: number
 }
 
 export interface TickerData {
@@ -43,6 +68,7 @@ export interface TickerData {
 export interface TrendingTopic {
   keyword: string
   count: number
+  label?: string
 }
 
 export interface RecommendedNews {

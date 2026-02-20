@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg-diego" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#16a34a"/>
+      <stop offset="100%" style="stop-color:#15803d"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="100" fill="url(#bg-diego)"/>
+  <!-- Neck -->
+  <rect x="80" y="130" width="40" height="24" rx="6" fill="#d4a574"/>
+  <!-- Shoulders (broad, athletic) -->
+  <ellipse cx="100" cy="175" rx="60" ry="32" fill="#14532d"/>
+  <!-- Polo collar -->
+  <path d="M82 152 L100 148 L118 152" fill="none" stroke="#166534" stroke-width="3"/>
+  <!-- Face (slightly wider/more angular) -->
+  <ellipse cx="100" cy="100" rx="42" ry="46" fill="#d4a574"/>
+  <!-- Jaw definition -->
+  <path d="M62 110 Q80 140 100 142 Q120 140 138 110" fill="#d4a574"/>
+  <!-- Hair (short, sporty) -->
+  <path d="M60 82 Q65 52 100 48 Q135 52 140 82 L138 76 Q133 50 100 45 Q67 50 62 76 Z" fill="#2d1b0e"/>
+  <!-- Eyes -->
+  <ellipse cx="82" cy="100" rx="5" ry="4" fill="white"/>
+  <ellipse cx="118" cy="100" rx="5" ry="4" fill="white"/>
+  <circle cx="83" cy="100" r="3" fill="#1a3a1a"/>
+  <circle cx="119" cy="100" r="3" fill="#1a3a1a"/>
+  <circle cx="84" cy="99" r="1" fill="white"/>
+  <circle cx="120" cy="99" r="1" fill="white"/>
+  <!-- Strong eyebrows -->
+  <path d="M72 91 Q82 86 92 90" fill="none" stroke="#2d1b0e" stroke-width="2.5"/>
+  <path d="M108 90 Q118 86 128 91" fill="none" stroke="#2d1b0e" stroke-width="2.5"/>
+  <!-- Nose -->
+  <path d="M97 106 Q100 114 103 106" fill="none" stroke="#b8956a" stroke-width="1.5"/>
+  <!-- Confident smile -->
+  <path d="M88 120 Q100 128 112 120" fill="none" stroke="#b0635c" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Stubble -->
+  <circle cx="85" cy="130" r="0.5" fill="#2d1b0e" opacity="0.2"/>
+  <circle cx="92" cy="133" r="0.5" fill="#2d1b0e" opacity="0.2"/>
+  <circle cx="100" cy="134" r="0.5" fill="#2d1b0e" opacity="0.2"/>
+  <circle cx="108" cy="133" r="0.5" fill="#2d1b0e" opacity="0.2"/>
+  <circle cx="115" cy="130" r="0.5" fill="#2d1b0e" opacity="0.2"/>
+</svg>

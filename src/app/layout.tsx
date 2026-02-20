@@ -3,6 +3,8 @@ import { Navbar } from '@/components/Navbar'
 import { Ticker } from '@/components/Ticker'
 import { Footer } from '@/components/Footer'
 import { MobileBottomNav } from '@/components/MobileBottomNav'
+import { BackToTop } from '@/components/BackToTop'
+import { CookieBanner } from '@/components/CookieBanner'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -10,7 +12,10 @@ export const metadata: Metadata = {
     default: 'Periodismo2 — Noticias de Chile y el mundo',
     template: '%s | Periodismo2',
   },
-  description: 'Agregador de noticias chilenas e internacionales. Noticias en tiempo real de más de 100 fuentes.',
+  description: 'Medio digital independiente con noticias de Chile y el mundo. Periodismo de calidad en tiempo real.',
+  icons: {
+    icon: '/favicon.svg',
+  },
   openGraph: {
     type: 'website',
     locale: 'es_CL',
@@ -41,13 +46,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="flex min-h-screen flex-col bg-neutral-50 font-sans text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white focus:shadow-lg">
+          Saltar al contenido principal
+        </a>
         <Ticker />
         <Navbar />
-        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
+        <main id="main-content" className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
           {children}
         </main>
         <Footer />
+        <BackToTop />
         <MobileBottomNav />
+        <CookieBanner />
       </body>
     </html>
   )

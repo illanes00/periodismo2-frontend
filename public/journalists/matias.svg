@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg-matias" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0891b2"/>
+      <stop offset="100%" style="stop-color:#0e7490"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="100" fill="url(#bg-matias)"/>
+  <!-- Neck -->
+  <rect x="82" y="132" width="36" height="22" rx="5" fill="#fde4c8"/>
+  <!-- Shoulders -->
+  <ellipse cx="100" cy="175" rx="55" ry="30" fill="#1e293b"/>
+  <!-- T-shirt collar -->
+  <path d="M80 155 Q100 165 120 155" fill="none" stroke="#334155" stroke-width="3"/>
+  <!-- Face -->
+  <ellipse cx="100" cy="100" rx="40" ry="46" fill="#fde4c8"/>
+  <!-- Hair (short, modern) -->
+  <path d="M60 85 Q65 55 100 50 Q135 55 140 85 L140 78 Q135 50 100 45 Q65 50 60 78 Z" fill="#3d2b1f"/>
+  <!-- Glasses -->
+  <rect x="68" y="93" width="24" height="18" rx="4" fill="none" stroke="#1e293b" stroke-width="2.5"/>
+  <rect x="108" y="93" width="24" height="18" rx="4" fill="none" stroke="#1e293b" stroke-width="2.5"/>
+  <line x1="92" y1="101" x2="108" y2="101" stroke="#1e293b" stroke-width="2"/>
+  <!-- Eyes behind glasses -->
+  <ellipse cx="80" cy="102" rx="4" ry="3" fill="white"/>
+  <ellipse cx="120" cy="102" rx="4" ry="3" fill="white"/>
+  <circle cx="81" cy="102" r="2.5" fill="#1a3a4a"/>
+  <circle cx="121" cy="102" r="2.5" fill="#1a3a4a"/>
+  <circle cx="82" cy="101" r="0.8" fill="white"/>
+  <circle cx="122" cy="101" r="0.8" fill="white"/>
+  <!-- Eyebrows -->
+  <path d="M70 90 Q80 85 92 89" fill="none" stroke="#3d2b1f" stroke-width="2"/>
+  <path d="M108 89 Q120 85 130 90" fill="none" stroke="#3d2b1f" stroke-width="2"/>
+  <!-- Nose -->
+  <path d="M98 108 Q100 114 102 108" fill="none" stroke="#e0c9a8" stroke-width="1.5"/>
+  <!-- Mouth (slight smile) -->
+  <path d="M90 122 Q100 128 110 122" fill="none" stroke="#c4756e" stroke-width="2" stroke-linecap="round"/>
+  <!-- Light stubble -->
+  <circle cx="88" cy="128" r="0.5" fill="#bfa88a" opacity="0.4"/>
+  <circle cx="95" cy="130" r="0.5" fill="#bfa88a" opacity="0.4"/>
+  <circle cx="105" cy="130" r="0.5" fill="#bfa88a" opacity="0.4"/>
+  <circle cx="112" cy="128" r="0.5" fill="#bfa88a" opacity="0.4"/>
+</svg>

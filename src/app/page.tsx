@@ -1,12 +1,20 @@
 import { Suspense } from 'react'
-import { getHomeNews, getLatestNews } from '@/lib/api'
+import { getTopStories, getLatestNews, getHomeNews } from '@/lib/api'
 import { HeroArticle } from '@/components/HeroArticle'
+import { FeaturedCard } from '@/components/FeaturedCard'
+import { HeadlineCard } from '@/components/HeadlineCard'
+import { HorizontalCard } from '@/components/HorizontalCard'
+import { CategorySection } from '@/components/CategorySection'
 import { NewsCard } from '@/components/NewsCard'
 import { TrendingTopics } from '@/components/TrendingTopics'
-import { CategoryTabs } from '@/components/CategoryTabs'
+import { MobileTrending } from '@/components/MobileTrending'
 import { InfiniteNewsFeed } from '@/components/InfiniteNewsFeed'
+import { CategoryGrid } from '@/components/CategoryGrid'
+import { CultureSection } from '@/components/CultureSection'
+import { WeatherWidget } from '@/components/WeatherWidget'
+import { UltimoMinuto } from '@/components/UltimoMinuto'
 
-export const revalidate = 300
+export const revalidate = 900
 
 function SectionHeading({
   children,
@@ -45,94 +53,141 @@ function SectionHeading({
 }
 
 async function HomeLayout() {
-  const homeNews = await getHomeNews()
+  const CATEGORY_SLUGS = ['politica', 'tecnologia', 'deportes'] as const
 
-  const chileHero = homeNews.chile[0]
-  const chileRest = homeNews.chile.slice(1, 5)
-  const international = homeNews.international.slice(0, 12)
+  const [topStories, homeNews, ...categoryResults] = await Promise.all([
+    getTopStories(15),
+    getHomeNews(),
+    ...CATEGORY_SLUGS.map((cat) => getLatestNews(5, undefined, undefined, cat)),
+  ])
 
-  // Collect IDs shown on the page to avoid duplicates in the infinite feed
-  const shownIds = [
-    ...(chileHero ? [chileHero.id] : []),
-    ...chileRest.map((i) => i.id),
-    ...international.map((i) => i.id),
-  ]
+  // If we have no stories at all, show a loading message
+  if (topStories.length === 0) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <p className="text-lg text-neutral-500 dark:text-neutral-400">
+          Cargando noticias...
+        </p>
+      </div>
+    )
+  }
+
+  const hero = topStories[0]
+  const featured = topStories.slice(1, 5)
+  const headlines = topStories.slice(5, 8)
+  const moreNews = topStories.slice(8, 15)
+
+  // Collect IDs shown above the fold to avoid duplicates
+  const shownIds = topStories.map((i) => i.id)
+  const shownSet = new Set(shownIds)
+
+  // Chile articles not already shown in top stories
+  const chileArticles = homeNews.chile.filter((a) => !shownSet.has(a.id))
 
   return (
     <>
-      {/* ===== HERO: Biggest Chile story ===== */}
-      {chileHero && (
+      {/* ===== LEVEL 1 — HERO ===== */}
+      {hero && (
         <div className="mb-8">
-          <HeroArticle item={chileHero} />
+          <HeroArticle item={hero} />
         </div>
       )}
 
-      {/* ===== Chile news + Trending sidebar ===== */}
-      <SectionHeading color="red">Chile</SectionHeading>
+      {/* ===== ULTIMO MINUTO — client-side fresh feed ===== */}
+      <UltimoMinuto />
 
-      <div className="mb-12 flex flex-col gap-8 lg:flex-row">
-        {/* Chile cards: main column */}
-        <div className="min-w-0 flex-1">
-          {chileRest.length > 0 && (
-            <div className="grid gap-5 sm:grid-cols-2">
-              {chileRest.map((item) => (
-                <NewsCard key={item.id} item={item} />
+      {/* ===== LEVEL 2 — FEATURED (2x2 grid) ===== */}
+      {featured.length > 0 && (
+        <div className="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2">
+          {featured.map((item) => (
+            <FeaturedCard key={item.id} item={item} />
+          ))}
+        </div>
+      )}
+
+      {/* ===== LEVEL 3 — HEADLINES ===== */}
+      {headlines.length > 0 && (
+        <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {headlines.map((item) => (
+            <HeadlineCard key={item.id} item={item} />
+          ))}
+        </div>
+      )}
+
+      {/* ===== CATEGORY GRID ===== */}
+      <CategoryGrid />
+
+      {/* ===== LEVEL 4 — MORE NEWS + SIDEBAR (weather + trending) ===== */}
+      {moreNews.length > 0 && (
+        <div className="mb-10 flex gap-8">
+          <div className="min-w-0 flex-1">
+            <SectionHeading>Más noticias</SectionHeading>
+            <div className="space-y-1">
+              {moreNews.map((item) => (
+                <HorizontalCard key={item.id} item={item} />
               ))}
             </div>
-          )}
-        </div>
-
-        {/* Trending sidebar: visible on lg+ */}
-        <aside className="w-full shrink-0 lg:w-72 xl:w-80">
-          <div className="sticky top-20" id="tendencias">
-            <Suspense
-              fallback={
-                <div className="rounded-xl border border-neutral-200/80 bg-white p-5 dark:border-neutral-800/80 dark:bg-neutral-900">
-                  <div className="skeleton mb-4 h-4 w-24 rounded" />
-                  <div className="flex flex-wrap gap-2">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <div key={i} className="skeleton h-8 w-20 rounded-lg" />
-                    ))}
+          </div>
+          <aside className="hidden w-72 shrink-0 lg:block">
+            <div className="sticky top-28 space-y-4">
+              <WeatherWidget />
+              <Suspense
+                fallback={
+                  <div className="rounded-xl border border-neutral-200/80 bg-white p-5 dark:border-neutral-800/80 dark:bg-neutral-900">
+                    <div className="skeleton mb-4 h-4 w-24 rounded" />
+                    <div className="flex flex-wrap gap-2">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="skeleton h-8 w-20 rounded-lg" />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              }
-            >
-              <TrendingTopics />
-            </Suspense>
-          </div>
-        </aside>
-      </div>
+                }
+              >
+                <TrendingTopics />
+              </Suspense>
+            </div>
+          </aside>
+        </div>
+      )}
 
-      {/* ===== Internacional: horizontal scroll on mobile, grid on desktop ===== */}
-      {international.length > 0 && (
-        <div className="mb-12">
-          <SectionHeading color="blue">Internacional</SectionHeading>
+      {/* Trending sidebar standalone when moreNews is empty */}
+      {moreNews.length === 0 && (
+        <div className="mb-10">
+          <Suspense fallback={null}>
+            <TrendingTopics />
+          </Suspense>
+        </div>
+      )}
 
-          {/* Mobile: horizontal scroll */}
-          <div className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-4 scrollbar-none sm:hidden">
-            {international.map((item) => (
-              <div key={item.id} className="w-72 shrink-0">
-                <NewsCard item={item} />
-              </div>
-            ))}
-          </div>
+      {/* ===== MOBILE TRENDING ===== */}
+      <Suspense fallback={null}>
+        <MobileTrending />
+      </Suspense>
 
-          {/* Desktop: grid */}
-          <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {international.map((item) => (
+      {/* ===== CHILE SECTION ===== */}
+      {chileArticles.length > 0 && (
+        <section className="mb-10">
+          <SectionHeading color="red" id="chile">Chile</SectionHeading>
+          <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {chileArticles.slice(0, 12).map((item) => (
               <NewsCard key={item.id} item={item} />
             ))}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* ===== Category Tabs ===== */}
-      <div className="mb-12">
-        <CategoryTabs />
-      </div>
+      {/* ===== QUE HACER EN SANTIAGO ===== */}
+      <Suspense fallback={null}>
+        <CultureSection />
+      </Suspense>
 
-      {/* ===== Infinite scroll: Mas noticias ===== */}
-      <InfiniteNewsFeed excludeIds={shownIds} />
+      {/* ===== LEVEL 5 — BY CATEGORY ===== */}
+      {CATEGORY_SLUGS.map((cat, i) => (
+        <CategorySection key={cat} category={cat} articles={categoryResults[i].items} />
+      ))}
+
+      {/* ===== LEVEL 6 — INFINITE SCROLL ===== */}
+      <InfiniteNewsFeed excludeIds={[...shownIds, ...chileArticles.map((a) => a.id)]} />
     </>
   )
 }
@@ -141,12 +196,14 @@ async function PaginatedLayout({
   source,
   before,
   category,
+  country,
 }: {
   source?: string
   before?: string
   category?: string
+  country?: string
 }) {
-  const news = await getLatestNews(21, before, source, undefined, category)
+  const news = await getLatestNews(21, before, country, category)
 
   const items = news.items
   const hero = items[0]
@@ -163,8 +220,8 @@ async function PaginatedLayout({
           {source
             ? `Fuente: ${source}`
             : category
-              ? `Categoria: ${category.charAt(0).toUpperCase() + category.slice(1)}`
-              : 'Ultimas noticias de mas de 100 fuentes'}
+              ? `Categoría: ${category.charAt(0).toUpperCase() + category.slice(1)}`
+              : 'Últimas noticias de más de 100 fuentes'}
         </p>
       </div>
 
@@ -179,7 +236,7 @@ async function PaginatedLayout({
       {!before && rest.length > 0 && (
         <div className="mb-6 flex items-center gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-            Mas noticias
+            Más noticias
           </h2>
           <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
         </div>
@@ -205,10 +262,10 @@ async function PaginatedLayout({
       {news.next_cursor && (
         <div className="mt-10 text-center">
           <a
-            href={`/?before=${encodeURIComponent(news.next_cursor)}${source ? `&source=${encodeURIComponent(source)}` : ''}${category ? `&category=${encodeURIComponent(category)}` : ''}`}
+            href={`/?before=${encodeURIComponent(news.next_cursor)}${source ? `&source=${encodeURIComponent(source)}` : ''}${category ? `&category=${encodeURIComponent(category)}` : ''}${country ? `&country=${encodeURIComponent(country)}` : ''}`}
             className="inline-flex items-center gap-2 rounded-xl border border-neutral-300 bg-white px-6 py-2.5 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:shadow dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:border-neutral-600"
           >
-            Cargar mas noticias
+            Cargar más noticias
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
             </svg>
@@ -222,10 +279,10 @@ async function PaginatedLayout({
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ source?: string; before?: string; category?: string }>
+  searchParams: Promise<{ source?: string; before?: string; category?: string; country?: string }>
 }) {
   const params = await searchParams
-  const hasFilters = params.source || params.before || params.category
+  const hasFilters = params.source || params.before || params.category || params.country
 
   return (
     <div className="min-w-0">
@@ -234,6 +291,7 @@ export default async function HomePage({
           source={params.source}
           before={params.before}
           category={params.category}
+          country={params.country}
         />
       ) : (
         <HomeLayout />

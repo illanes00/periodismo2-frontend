@@ -22,7 +22,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      aria-label="Toggle dark mode"
+      aria-label={dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
       className="rounded-md p-1.5 text-neutral-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
     >
       {dark ? (

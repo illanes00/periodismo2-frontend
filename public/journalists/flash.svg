@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg-flash" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#d97706"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="100" fill="url(#bg-flash)"/>
+  <!-- Lightning bolt -->
+  <path d="M115 35 L75 105 L95 105 L80 165 L140 85 L115 85 L130 35 Z" fill="white" opacity="0.95"/>
+  <path d="M113 40 L78 103 L96 103 L83 160 L137 88 L116 88 L128 40 Z" fill="#fbbf24"/>
+  <!-- FLASH text -->
+  <text x="100" y="185" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="white" letter-spacing="3">FLASH</text>
+</svg>

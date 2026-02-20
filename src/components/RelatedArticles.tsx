@@ -2,15 +2,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { getRelatedArticles } from '@/lib/api'
 
-function extractDomain(url: string | null): string {
-  if (!url) return ''
-  try {
-    return new URL(url).hostname.replace('www.', '').replace(/\.(com|cl|org|net|es).*/, '')
-  } catch {
-    return ''
-  }
-}
-
 interface RelatedArticlesProps {
   articleId: string
   limit?: number
@@ -40,7 +31,7 @@ export async function RelatedArticles({ articleId, limit = 5 }: RelatedArticlesP
               {item.img ? (
                 <Image
                   src={item.img}
-                  alt=""
+                  alt={item.title}
                   fill
                   sizes="80px"
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -57,9 +48,11 @@ export async function RelatedArticles({ articleId, limit = 5 }: RelatedArticlesP
               <h3 className="mb-1 line-clamp-2 text-sm font-bold leading-snug text-neutral-900 transition group-hover:text-brand-700 dark:text-neutral-100 dark:group-hover:text-brand-500">
                 {item.title}
               </h3>
-              <span className="text-xs text-neutral-400 dark:text-neutral-500">
-                {extractDomain(item.source)}
-              </span>
+              {item.journalist_name && (
+                <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                  {item.journalist_name}
+                </span>
+              )}
             </div>
           </Link>
         ))}

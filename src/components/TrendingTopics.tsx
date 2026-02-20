@@ -24,7 +24,7 @@ export async function TrendingTopics() {
             href={`/search?q=${encodeURIComponent(topic.keyword)}`}
             className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-sm font-medium text-neutral-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-brand-800 dark:hover:bg-brand-900/30 dark:hover:text-brand-400"
           >
-            <span>{topic.keyword}</span>
+            <span>{topic.keyword.charAt(0).toUpperCase() + topic.keyword.slice(1)}</span>
             <span className="text-xs text-neutral-400 dark:text-neutral-500">{topic.count}</span>
           </Link>
         ))}
