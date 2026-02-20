@@ -8,6 +8,7 @@ import { EntityTags } from '@/components/EntityTags'
 import { JournalistAvatar } from '@/components/JournalistAvatar'
 import { RelatedArticles } from '@/components/RelatedArticles'
 import { ShareButtons } from '@/components/ShareButtons'
+import { FloatingShareBar } from '@/components/FloatingShareBar'
 import { ArticleBody } from '@/components/ArticleBody'
 
 export const revalidate = 300
@@ -73,6 +74,7 @@ export default async function ArticlePage({ params }: Props) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript }} />
+      <FloatingShareBar title={article.title} />
       <article className="mx-auto max-w-3xl">
         {/* Back link */}
         <Link

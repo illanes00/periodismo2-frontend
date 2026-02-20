@@ -5,6 +5,8 @@ import { Footer } from '@/components/Footer'
 import { MobileBottomNav } from '@/components/MobileBottomNav'
 import { BackToTop } from '@/components/BackToTop'
 import { CookieBanner } from '@/components/CookieBanner'
+import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration'
+import { PushNotificationBanner } from '@/components/PushNotificationBanner'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -58,6 +60,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <BackToTop />
         <MobileBottomNav />
         <CookieBanner />
+        <ServiceWorkerRegistration />
+        <PushNotificationBanner />
       </body>
     </html>
   )
