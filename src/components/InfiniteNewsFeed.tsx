@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import type { NewsItem } from '@/lib/types'
 import { NewsCard } from './NewsCard'
+import { AdaptiveGrid } from './AdaptiveGrid'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.periodismo2.cl'
 const MAX_AUTO_LOADS = 3
@@ -85,11 +86,11 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
       </div>
 
       {items.length > 0 && (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <AdaptiveGrid minItemWidth={280} className="gap-5">
           {items.map((item) => (
             <NewsCard key={item.id} item={item} />
           ))}
-        </div>
+        </AdaptiveGrid>
       )}
 
       {/* Loading skeleton */}

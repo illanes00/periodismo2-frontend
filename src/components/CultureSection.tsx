@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import { getLatestNews } from '@/lib/api'
 import { NewsCard } from './NewsCard'
+import { AdaptiveGrid } from './AdaptiveGrid'
 
 export async function CultureSection() {
-  const news = await getLatestNews(4, undefined, 'CL', 'cultura')
+  const news = await getLatestNews(8, undefined, 'CL', 'cultura')
   const articles = news.items
 
   if (articles.length === 0) return null
@@ -26,11 +27,11 @@ export async function CultureSection() {
           Ver mas &rarr;
         </Link>
       </div>
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <AdaptiveGrid minItemWidth={220} className="gap-5">
         {articles.map((item) => (
           <NewsCard key={item.id} item={item} />
         ))}
-      </div>
+      </AdaptiveGrid>
     </section>
   )
 }

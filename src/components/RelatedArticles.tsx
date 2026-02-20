@@ -1,13 +1,14 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { getRelatedArticles } from '@/lib/api'
+import { AdaptiveGrid } from './AdaptiveGrid'
 
 interface RelatedArticlesProps {
   articleId: string
   limit?: number
 }
 
-export async function RelatedArticles({ articleId, limit = 5 }: RelatedArticlesProps) {
+export async function RelatedArticles({ articleId, limit = 6 }: RelatedArticlesProps) {
   const articles = await getRelatedArticles(articleId, limit)
 
   if (articles.length === 0) {
@@ -19,7 +20,7 @@ export async function RelatedArticles({ articleId, limit = 5 }: RelatedArticlesP
       <h2 className="mb-6 font-serif text-xl font-bold text-neutral-900 dark:text-white">
         Noticias relacionadas
       </h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <AdaptiveGrid minItemWidth={280} className="gap-4">
         {articles.map((item) => (
           <Link
             key={item.id}
@@ -56,7 +57,7 @@ export async function RelatedArticles({ articleId, limit = 5 }: RelatedArticlesP
             </div>
           </Link>
         ))}
-      </div>
+      </AdaptiveGrid>
     </section>
   )
 }

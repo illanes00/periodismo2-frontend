@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { NewsItem } from '@/lib/types'
 import { CATEGORIES, getCategoryColors } from '@/lib/categories'
 import { NewsCard } from './NewsCard'
+import { AdaptiveGrid } from './AdaptiveGrid'
 
 export function CategorySection({ category, articles }: { category: string; articles: NewsItem[] }) {
   const cat = CATEGORIES[category]
@@ -28,11 +29,11 @@ export function CategorySection({ category, articles }: { category: string; arti
       </div>
 
       {/* Articles grid */}
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {articles.slice(0, 3).map((item) => (
+      <AdaptiveGrid minItemWidth={300} className="gap-5">
+        {articles.slice(0, 6).map((item) => (
           <NewsCard key={item.id} item={item} />
         ))}
-      </div>
+      </AdaptiveGrid>
     </section>
   )
 }
