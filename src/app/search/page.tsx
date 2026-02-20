@@ -1,6 +1,7 @@
 import { searchNews } from '@/lib/api'
 import { NewsCard } from '@/components/NewsCard'
 import { SearchInput } from '@/components/SearchInput'
+import { SearchFilters } from '@/components/SearchFilters'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
@@ -8,7 +9,21 @@ export const metadata: Metadata = {
   title: 'Buscar',
 }
 
-function SearchResults({ q, before }: { q: string; before?: string }) {
+function SearchResults({
+  q,
+  before,
+  category,
+  journalist,
+  date_from,
+  date_to,
+}: {
+  q: string
+  before?: string
+  category?: string
+  journalist?: string
+  date_from?: string
+  date_to?: string
+}) {
   return (
     <Suspense
       fallback={
@@ -26,13 +41,38 @@ function SearchResults({ q, before }: { q: string; before?: string }) {
         </div>
       }
     >
-      <SearchResultsInner q={q} before={before} />
+      <SearchResultsInner q={q} before={before} category={category} journalist={journalist} date_from={date_from} date_to={date_to} />
     </Suspense>
   )
 }
 
-async function SearchResultsInner({ q, before }: { q: string; before?: string }) {
-  const news = await searchNews(q, 20, before)
+async function SearchResultsInner({
+  q,
+  before,
+  category,
+  journalist,
+  date_from,
+  date_to,
+}: {
+  q: string
+  before?: string
+  category?: string
+  journalist?: string
+  date_from?: string
+  date_to?: string
+}) {
+  const filters = { category, journalist, date_from, date_to }
+  const news = await searchNews(q, 20, before, filters)
+
+  function buildNextUrl(): string {
+    if (!news.next_cursor) return ''
+    const params = new URLSearchParams({ q, before: news.next_cursor })
+    if (category) params.set('category', category)
+    if (journalist) params.set('journalist', journalist)
+    if (date_from) params.set('date_from', date_from)
+    if (date_to) params.set('date_to', date_to)
+    return `/search?${params.toString()}`
+  }
 
   return (
     <>
@@ -56,10 +96,10 @@ async function SearchResultsInner({ q, before }: { q: string; before?: string })
       {news.next_cursor && (
         <div className="mt-8 text-center">
           <a
-            href={`/search?q=${encodeURIComponent(q)}&before=${encodeURIComponent(news.next_cursor)}`}
+            href={buildNextUrl()}
             className="inline-flex items-center gap-2 rounded-xl border border-neutral-300 bg-white px-6 py-2.5 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:shadow dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:border-neutral-600"
           >
-            Mas resultados
+            Más resultados
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
             </svg>
@@ -73,14 +113,20 @@ async function SearchResultsInner({ q, before }: { q: string; before?: string })
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; before?: string }>
+  searchParams: Promise<{
+    q?: string
+    before?: string
+    category?: string
+    journalist?: string
+    date_from?: string
+    date_to?: string
+  }>
 }) {
   const params = await searchParams
   const q = params.q || ''
 
   return (
     <div>
-      {/* Search header with inline input */}
       <div className="mb-8">
         <h1 className="mb-4 font-serif text-2xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-3xl">
           Buscar noticias
@@ -88,13 +134,23 @@ export default async function SearchPage({
         <SearchInput initialQuery={q} />
       </div>
 
-      {/* Results */}
+      <Suspense fallback={null}>
+        <SearchFilters />
+      </Suspense>
+
       {q.length >= 2 ? (
         <>
           <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">
             Resultados para &ldquo;{q}&rdquo;
           </p>
-          <SearchResults q={q} before={params.before} />
+          <SearchResults
+            q={q}
+            before={params.before}
+            category={params.category}
+            journalist={params.journalist}
+            date_from={params.date_from}
+            date_to={params.date_to}
+          />
         </>
       ) : (
         <div className="py-16 text-center">

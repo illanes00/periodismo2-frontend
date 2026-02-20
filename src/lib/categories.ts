@@ -10,6 +10,7 @@ export const CATEGORIES: Record<string, { name: string; desc: string; color: str
   entretenimiento: { name: 'Entretenimiento', desc: 'TV, cine y redes', color: 'fuchsia' },
   pais: { name: 'País', desc: 'Noticias nacionales de Chile', color: 'sky' },
   gaming: { name: 'Gaming', desc: 'Videojuegos y esports', color: 'lime' },
+  opinion: { name: 'Opinión', desc: 'Columnas y análisis de expertos', color: 'indigo' },
 }
 
 /** Mapping from category color names to Tailwind class sets (avoid dynamic class generation) */
@@ -80,6 +81,28 @@ export const CATEGORY_COLORS: Record<string, { badge: string; dot: string; borde
     border: 'border-l-lime-500',
     bg: 'bg-lime-500',
   },
+  indigo: {
+    badge: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
+    dot: 'bg-indigo-500',
+    border: 'border-l-indigo-500',
+    bg: 'bg-indigo-500',
+  },
+}
+
+/** Hero gradient accent classes per color (used by HeroArticle accentColor prop) */
+export const HERO_ACCENT: Record<string, string> = {
+  red: 'from-red-900/80',
+  emerald: 'from-emerald-900/80',
+  blue: 'from-blue-900/80',
+  violet: 'from-violet-900/80',
+  amber: 'from-amber-900/80',
+  teal: 'from-teal-900/80',
+  pink: 'from-pink-900/80',
+  orange: 'from-orange-900/80',
+  fuchsia: 'from-fuchsia-900/80',
+  sky: 'from-sky-900/80',
+  lime: 'from-lime-900/80',
+  indigo: 'from-indigo-900/80',
 }
 
 /** Get color classes for a category slug. Falls back to neutral. */
@@ -88,4 +111,12 @@ export function getCategoryColors(category: string | null) {
   const cat = CATEGORIES[category]
   if (!cat) return CATEGORY_COLORS.red
   return CATEGORY_COLORS[cat.color] || CATEGORY_COLORS.red
+}
+
+/** Get hero accent gradient class for a category slug */
+export function getHeroAccent(category: string | null): string | undefined {
+  if (!category) return undefined
+  const cat = CATEGORIES[category]
+  if (!cat) return undefined
+  return HERO_ACCENT[cat.color]
 }

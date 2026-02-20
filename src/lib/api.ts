@@ -1,4 +1,4 @@
-import type { Entity, EntityDetail, HomeNews, JournalistInfo, NewsItem, NewsItemDetail, PaginatedNews, RecommendedNews, TrendingTopic } from './types'
+import type { Entity, EntityDetail, HomeNews, IndicatorHistory, JournalistInfo, NewsItem, NewsItemDetail, PaginatedNews, RecommendedNews, TrendingTopic } from './types'
 
 const API_PUBLIC = 'https://api.periodismo2.cl'
 const API_INTERNAL = process.env.API_URL || API_PUBLIC
@@ -53,9 +53,14 @@ export async function searchNews(
   q: string,
   limit = 20,
   before?: string,
+  filters?: { category?: string; journalist?: string; date_from?: string; date_to?: string },
 ): Promise<PaginatedNews> {
   const params = new URLSearchParams({ q, limit: String(limit) })
   if (before) params.set('before', before)
+  if (filters?.category) params.set('category', filters.category)
+  if (filters?.journalist) params.set('journalist', filters.journalist)
+  if (filters?.date_from) params.set('date_from', filters.date_from)
+  if (filters?.date_to) params.set('date_to', filters.date_to)
   return fetchAPI<PaginatedNews>(`/news/search/?${params}`)
 }
 
@@ -106,5 +111,13 @@ export async function getArticleEntities(articleId: string): Promise<Entity[]> {
     return await fetchAPI<Entity[]>(`/news/${articleId}/entities`, 300)
   } catch {
     return []
+  }
+}
+
+export async function getIndicatorHistory(indicator: string, days = 30): Promise<IndicatorHistory | null> {
+  try {
+    return await fetchAPI<IndicatorHistory>(`/api/indicators/${indicator}/history?days=${days}`, 3600)
+  } catch {
+    return null
   }
 }

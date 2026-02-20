@@ -6,10 +6,9 @@ import { NewsCard } from './NewsCard'
 import { AdaptiveGrid } from './AdaptiveGrid'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.periodismo2.cl'
-const MAX_AUTO_LOADS = 3
+const PAGE_SIZE = 12
 
 interface InfiniteNewsFeedProps {
-  /** IDs of news items already shown on the page, to avoid duplicates */
   excludeIds?: string[]
 }
 
@@ -19,15 +18,14 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [initialLoaded, setInitialLoaded] = useState(false)
-  const [autoLoadCount, setAutoLoadCount] = useState(0)
-  const observerRef = useRef<HTMLDivElement>(null)
+  const [pageCount, setPageCount] = useState(0)
   const excludeSet = useRef(new Set(excludeIds))
 
   const fetchMore = useCallback(async (currentCursor: string | null) => {
     if (loading) return
     setLoading(true)
     try {
-      const params = new URLSearchParams({ limit: '12' })
+      const params = new URLSearchParams({ limit: String(PAGE_SIZE) })
       if (currentCursor) params.set('before', currentCursor)
       const res = await fetch(`${API_BASE}/news/latest?${params}`)
       if (!res.ok) throw new Error('Failed to fetch')
@@ -39,7 +37,7 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
       setItems((prev) => [...prev, ...newItems])
       setCursor(data.next_cursor || null)
       setHasMore(!!data.next_cursor)
-      setAutoLoadCount((c) => c + 1)
+      setPageCount((c) => c + 1)
     } catch {
       setHasMore(false)
     } finally {
@@ -55,27 +53,6 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
     }
   }, [initialLoaded, fetchMore])
 
-  // Intersection observer for auto-scroll (limited to MAX_AUTO_LOADS)
-  useEffect(() => {
-    if (autoLoadCount >= MAX_AUTO_LOADS) return
-
-    const el = observerRef.current
-    if (!el) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading && cursor) {
-          fetchMore(cursor)
-        }
-      },
-      { rootMargin: '400px' }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [hasMore, loading, cursor, fetchMore, autoLoadCount])
-
-  const showLoadMoreButton = hasMore && autoLoadCount >= MAX_AUTO_LOADS && !loading
-
   return (
     <section>
       <div className="mb-6 flex items-center gap-3">
@@ -83,6 +60,11 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
           Mas noticias
         </h2>
         <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
+        {pageCount > 0 && (
+          <span className="shrink-0 text-xs tabular-nums text-neutral-400 dark:text-neutral-500">
+            Página {pageCount} · {items.length} noticias
+          </span>
+        )}
       </div>
 
       {items.length > 0 && (
@@ -109,11 +91,8 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
         </div>
       )}
 
-      {/* Auto-scroll trigger (only active during first MAX_AUTO_LOADS loads) */}
-      {autoLoadCount < MAX_AUTO_LOADS && <div ref={observerRef} className="h-px" />}
-
-      {/* Manual "Load more" button after auto-loads exhausted */}
-      {showLoadMoreButton && (
+      {/* Manual "Load more" button */}
+      {hasMore && !loading && cursor && (
         <div className="mt-8 text-center">
           <button
             onClick={() => fetchMore(cursor)}
@@ -122,7 +101,7 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
             </svg>
-            Cargar mas noticias
+            Cargar más noticias
           </button>
         </div>
       )}
@@ -130,7 +109,7 @@ export function InfiniteNewsFeed({ excludeIds = [] }: InfiniteNewsFeedProps) {
       {/* End state */}
       {!hasMore && items.length > 0 && (
         <p className="mt-8 text-center text-sm text-neutral-400 dark:text-neutral-600">
-          No hay mas noticias por mostrar.
+          No hay más noticias por mostrar.
         </p>
       )}
     </section>

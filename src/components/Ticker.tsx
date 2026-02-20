@@ -1,13 +1,30 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { TickerData, TrendingTopic } from '@/lib/types'
+import type { TrendingTopic } from '@/lib/types'
 import { WeatherInline } from './WeatherWidget'
 import { DateTimeDisplay } from './DateTimeDisplay'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.periodismo2.cl'
 
-function RotatingIndicators({ indicators }: { indicators: { label: string; value: number; color: string }[] }) {
+interface IndicatorItem {
+  label: string
+  value: number
+  prev?: number
+  color: string
+}
+
+function DeltaArrow({ current, previous }: { current: number; previous?: number }) {
+  if (!previous || previous === current) return null
+  const isUp = current > previous
+  return (
+    <span className={`text-[10px] font-bold ${isUp ? 'text-emerald-500' : 'text-red-500'}`}>
+      {isUp ? '▲' : '▼'}
+    </span>
+  )
+}
+
+function RotatingIndicators({ indicators }: { indicators: IndicatorItem[] }) {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
@@ -23,18 +40,49 @@ function RotatingIndicators({ indicators }: { indicators: { label: string; value
     <span className="flex shrink-0 items-center gap-1.5 transition-opacity duration-300">
       <span className="font-semibold text-neutral-700 dark:text-neutral-300">{item.label}</span>
       <span className={item.color}>${item.value?.toLocaleString('es-CL')}</span>
+      <DeltaArrow current={item.value} previous={item.prev} />
     </span>
   )
 }
 
 export function Ticker() {
-  const [data, setData] = useState<TickerData | null>(null)
+  const [indicators, setIndicators] = useState<IndicatorItem[]>([])
   const [trending, setTrending] = useState<TrendingTopic[]>([])
 
   useEffect(() => {
     fetch(`${API_BASE}/api/indicators`)
       .then((r) => { if (r.ok) return r.json(); throw new Error('not ok') })
-      .then((d) => setData(d))
+      .then((d) => {
+        const items: IndicatorItem[] = []
+        if (d.dolar?.valor) {
+          items.push({ label: 'USD', value: d.dolar.valor, color: 'text-emerald-600 dark:text-emerald-400' })
+        }
+        if (d.euro?.valor) {
+          items.push({ label: 'EUR', value: d.euro.valor, color: 'text-blue-600 dark:text-blue-400' })
+        }
+        if (d.uf?.valor) {
+          items.push({ label: 'UF', value: d.uf.valor, color: 'text-amber-600 dark:text-amber-400' })
+        }
+        setIndicators(items)
+
+        // Fetch yesterday's values for delta arrows
+        const yesterday = new Date()
+        yesterday.setDate(yesterday.getDate() - 1)
+        const dateStr = yesterday.toISOString().split('T')[0]
+        fetch(`${API_BASE}/api/indicators/dolar/history?days=7`)
+          .then((r) => r.ok ? r.json() : null)
+          .then((hist) => {
+            if (!hist?.series || hist.series.length < 2) return
+            // series[0] is newest, series[1] is previous day
+            setIndicators(prev => prev.map(ind => {
+              if (ind.label === 'USD' && hist.series.length >= 2) {
+                return { ...ind, prev: hist.series[1].value }
+              }
+              return ind
+            }))
+          })
+          .catch(() => {})
+      })
       .catch(() => {})
 
     fetch(`${API_BASE}/news/trending-topics?hours=6`)
@@ -44,14 +92,6 @@ export function Ticker() {
       })
       .catch(() => {})
   }, [])
-
-  const indicators = data
-    ? [
-        { label: 'USD', value: data.dolar?.valor, color: 'text-emerald-600 dark:text-emerald-400' },
-        { label: 'EUR', value: data.euro?.valor, color: 'text-blue-600 dark:text-blue-400' },
-        { label: 'UF', value: data.uf?.valor, color: 'text-amber-600 dark:text-amber-400' },
-      ].filter((i) => i.value)
-    : []
 
   return (
     <div className="border-b border-neutral-200/60 bg-neutral-100/80 dark:border-neutral-800/60 dark:bg-neutral-900/80">
@@ -79,6 +119,7 @@ export function Ticker() {
                 <span key={item.label} className="flex shrink-0 items-center gap-1.5">
                   <span className="font-semibold text-neutral-700 dark:text-neutral-300">{item.label}</span>
                   <span className={item.color}>${item.value?.toLocaleString('es-CL')}</span>
+                  <DeltaArrow current={item.value} previous={item.prev} />
                 </span>
               ))}
             </span>

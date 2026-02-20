@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { NewsItem } from '@/lib/types'
 import { CATEGORIES, getCategoryColors } from '@/lib/categories'
+import { JournalistByline } from './JournalistByline'
 import { timeAgo, countryFlag } from '@/lib/utils'
 
 export function HorizontalCard({ item }: { item: NewsItem }) {
@@ -30,11 +31,19 @@ export function HorizontalCard({ item }: { item: NewsItem }) {
 
       {/* Content */}
       <div className="flex min-w-0 flex-1 flex-col justify-center">
-        <div className="mb-1 flex items-center gap-1.5 text-[11px] text-neutral-400 dark:text-neutral-500">
+        <div className="mb-1 flex flex-wrap items-center gap-1.5 text-[11px] text-neutral-400 dark:text-neutral-500">
           {catName && (
             <span className={`rounded px-1 py-0.5 text-[10px] font-semibold ${colors.badge}`}>
               {countryFlag(item.country) ? `${countryFlag(item.country)} ` : ''}{catName}
             </span>
+          )}
+          {item.journalist_name && (
+            <JournalistByline
+              name={item.journalist_name}
+              slug={item.journalist_slug}
+              photoUrl={item.journalist_photo_url}
+              size="sm"
+            />
           )}
           {item.published_ts && <time>{timeAgo(item.published_ts)}</time>}
         </div>

@@ -91,3 +91,10 @@ export interface EntityDetail extends Entity {
   description: string | null
   articles: NewsItem[]
 }
+
+export interface IndicatorHistory {
+  indicator: string
+  name: string
+  unit: string
+  series: { date: string; value: number }[]
+}

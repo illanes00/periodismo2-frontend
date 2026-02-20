@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { NewsItem } from '@/lib/types'
 import { CATEGORIES } from '@/lib/categories'
-import { JournalistAvatar } from './JournalistAvatar'
+import { JournalistByline } from './JournalistByline'
 import { CategoryFallback } from './CategoryFallback'
 import { timeAgo, countryFlag } from '@/lib/utils'
 
@@ -10,10 +10,11 @@ type CardVariant = 'default' | 'compact' | 'horizontal'
 
 export function NewsCard({ item, variant = 'default' }: { item: NewsItem; variant?: CardVariant }) {
   const journalistBadge = item.journalist_name ? (
-    <span className="inline-flex items-center gap-1 rounded bg-neutral-100 px-1.5 py-0.5 font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
-      <JournalistAvatar config={null} photoUrl={item.journalist_photo_url} size="sm" />
-      {item.journalist_name}
-    </span>
+    <JournalistByline
+      name={item.journalist_name}
+      slug={item.journalist_slug}
+      photoUrl={item.journalist_photo_url}
+    />
   ) : null
 
   if (variant === 'compact') {

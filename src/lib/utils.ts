@@ -65,6 +65,21 @@ const COUNTRY_FLAGS: Record<string, string> = {
   LATAM: '\u{1F310}',
 }
 
+export function formatSmartTime(dateStr: string | null | undefined): string {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  const diffMs = Date.now() - date.getTime()
+  const twoHours = 2 * 60 * 60 * 1000
+  if (diffMs < twoHours) {
+    return date.toLocaleTimeString('es-CL', {
+      timeZone: 'America/Santiago',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+  return timeAgo(dateStr)
+}
+
 export function countryFlag(code: string | null | undefined): string {
   if (!code || code === 'CL') return ''
   return COUNTRY_FLAGS[code] || '\u{1F310}'

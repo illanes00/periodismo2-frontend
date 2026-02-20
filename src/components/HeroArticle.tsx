@@ -4,7 +4,16 @@ import type { NewsItem } from '@/lib/types'
 import { CATEGORIES } from '@/lib/categories'
 import { timeAgo, countryFlag } from '@/lib/utils'
 
-export function HeroArticle({ item }: { item: NewsItem }) {
+interface Props {
+  item: NewsItem
+  accentColor?: string
+}
+
+export function HeroArticle({ item, accentColor }: Props) {
+  const gradient = accentColor
+    ? `bg-gradient-to-t ${accentColor} via-black/50 to-transparent`
+    : 'bg-gradient-to-t from-black/90 via-black/50 to-transparent'
+
   return (
     <Link
       href={`/article/${item.id}`}
@@ -20,7 +29,7 @@ export function HeroArticle({ item }: { item: NewsItem }) {
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+          <div className={`absolute inset-0 ${gradient}`} />
         </div>
       ) : (
         <div className="aspect-[4/3] bg-gradient-to-br from-brand-800 to-neutral-900 sm:aspect-[21/9] md:aspect-[2/1]" />

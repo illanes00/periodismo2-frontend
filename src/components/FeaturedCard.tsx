@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { NewsItem } from '@/lib/types'
 import { CATEGORIES, getCategoryColors } from '@/lib/categories'
-import { JournalistAvatar } from './JournalistAvatar'
+import { JournalistByline } from './JournalistByline'
 import { CategoryFallback } from './CategoryFallback'
 import { timeAgo, readingTime, countryFlag } from '@/lib/utils'
 
@@ -48,10 +48,11 @@ export function FeaturedCard({ item }: { item: NewsItem }) {
         </p>
         <div className="mt-auto flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-500">
           {item.journalist_name && (
-            <span className="inline-flex items-center gap-1">
-              <JournalistAvatar config={null} photoUrl={item.journalist_photo_url} size="sm" />
-              {item.journalist_name}
-            </span>
+            <JournalistByline
+              name={item.journalist_name}
+              slug={item.journalist_slug}
+              photoUrl={item.journalist_photo_url}
+            />
           )}
           {item.published_ts && (
             <time className="text-neutral-400 dark:text-neutral-600">{timeAgo(item.published_ts)}</time>

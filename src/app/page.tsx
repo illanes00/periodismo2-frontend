@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { getTopStories, getLatestNews, getHomeNews } from '@/lib/api'
 import { HeroArticle } from '@/components/HeroArticle'
-import { FeaturedCard } from '@/components/FeaturedCard'
+import { FeaturedHeroLayout } from '@/components/FeaturedHeroLayout'
 import { HeadlineCard } from '@/components/HeadlineCard'
 import { HorizontalCard } from '@/components/HorizontalCard'
 import { CategorySection } from '@/components/CategorySection'
@@ -9,10 +9,12 @@ import { NewsCard } from '@/components/NewsCard'
 import { TrendingTopics } from '@/components/TrendingTopics'
 import { MobileTrending } from '@/components/MobileTrending'
 import { InfiniteNewsFeed } from '@/components/InfiniteNewsFeed'
+import { AdaptiveGrid } from '@/components/AdaptiveGrid'
 import { CategoryGrid } from '@/components/CategoryGrid'
 import { CultureSection } from '@/components/CultureSection'
 import { WeatherWidget } from '@/components/WeatherWidget'
 import { UltimoMinuto } from '@/components/UltimoMinuto'
+import { OpinionSection } from '@/components/OpinionSection'
 
 export const revalidate = 900
 
@@ -58,7 +60,7 @@ async function HomeLayout() {
   const [topStories, homeNews, ...categoryResults] = await Promise.all([
     getTopStories(15),
     getHomeNews(),
-    ...CATEGORY_SLUGS.map((cat) => getLatestNews(5, undefined, undefined, cat)),
+    ...CATEGORY_SLUGS.map((cat) => getLatestNews(6, undefined, undefined, cat)),
   ])
 
   // If we have no stories at all, show a loading message
@@ -86,26 +88,15 @@ async function HomeLayout() {
 
   return (
     <>
-      {/* ===== LEVEL 1 — HERO ===== */}
-      {hero && (
-        <div className="mb-8">
-          <HeroArticle item={hero} />
-        </div>
-      )}
+      {/* ===== LEVEL 1 — HERO + ULTIMAS SIDEBAR (La Tercera layout) ===== */}
+      {hero && <FeaturedHeroLayout hero={hero} featured={featured} />}
 
-      {/* ===== ULTIMO MINUTO — client-side fresh feed ===== */}
-      <UltimoMinuto />
+      {/* ===== MOBILE: ULTIMO MINUTO (horizontal scroll) ===== */}
+      <div className="lg:hidden">
+        <UltimoMinuto />
+      </div>
 
-      {/* ===== LEVEL 2 — FEATURED (2x2 grid) ===== */}
-      {featured.length > 0 && (
-        <div className="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2">
-          {featured.map((item) => (
-            <FeaturedCard key={item.id} item={item} />
-          ))}
-        </div>
-      )}
-
-      {/* ===== LEVEL 3 — HEADLINES ===== */}
+      {/* ===== LEVEL 2 — HEADLINES ===== */}
       {headlines.length > 0 && (
         <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {headlines.map((item) => (
@@ -117,7 +108,7 @@ async function HomeLayout() {
       {/* ===== CATEGORY GRID ===== */}
       <CategoryGrid />
 
-      {/* ===== LEVEL 4 — MORE NEWS + SIDEBAR (weather + trending) ===== */}
+      {/* ===== LEVEL 3 — MORE NEWS + SIDEBAR (weather + trending) ===== */}
       {moreNews.length > 0 && (
         <div className="mb-10 flex gap-8">
           <div className="min-w-0 flex-1">
@@ -168,25 +159,30 @@ async function HomeLayout() {
       {chileArticles.length > 0 && (
         <section className="mb-10">
           <SectionHeading color="red" id="chile">Chile</SectionHeading>
-          <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <AdaptiveGrid minItemWidth={280} className="gap-5">
             {chileArticles.slice(0, 12).map((item) => (
               <NewsCard key={item.id} item={item} />
             ))}
-          </div>
+          </AdaptiveGrid>
         </section>
       )}
+
+      {/* ===== OPINION SECTION ===== */}
+      <Suspense fallback={null}>
+        <OpinionSection />
+      </Suspense>
 
       {/* ===== QUE HACER EN SANTIAGO ===== */}
       <Suspense fallback={null}>
         <CultureSection />
       </Suspense>
 
-      {/* ===== LEVEL 5 — BY CATEGORY ===== */}
+      {/* ===== LEVEL 4 — BY CATEGORY ===== */}
       {CATEGORY_SLUGS.map((cat, i) => (
         <CategorySection key={cat} category={cat} articles={categoryResults[i].items} />
       ))}
 
-      {/* ===== LEVEL 6 — INFINITE SCROLL ===== */}
+      {/* ===== LEVEL 5 — LOAD MORE ===== */}
       <InfiniteNewsFeed excludeIds={[...shownIds, ...chileArticles.map((a) => a.id)]} />
     </>
   )
@@ -203,7 +199,7 @@ async function PaginatedLayout({
   category?: string
   country?: string
 }) {
-  const news = await getLatestNews(21, before, country, category)
+  const news = await getLatestNews(25, before, country, category)
 
   const items = news.items
   const hero = items[0]
@@ -243,11 +239,11 @@ async function PaginatedLayout({
       )}
 
       {/* Grid */}
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <AdaptiveGrid minItemWidth={280} className="gap-5">
         {(before ? items : rest).map((item) => (
           <NewsCard key={item.id} item={item} />
         ))}
-      </div>
+      </AdaptiveGrid>
 
       {/* Empty state */}
       {items.length === 0 && (

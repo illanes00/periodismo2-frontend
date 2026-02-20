@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getLatestNews, getJournalists } from '@/lib/api'
-import { CATEGORIES, getCategoryColors } from '@/lib/categories'
+import { CATEGORIES, getCategoryColors, getHeroAccent } from '@/lib/categories'
 import { HeroArticle } from '@/components/HeroArticle'
 import { NewsCard } from '@/components/NewsCard'
+import { AdaptiveGrid } from '@/components/AdaptiveGrid'
 import { HorizontalCard } from '@/components/HorizontalCard'
 import { JournalistAvatar } from '@/components/JournalistAvatar'
+import { FinancialDashboard } from '@/components/FinancialDashboard'
 import Link from 'next/link'
 
 export async function generateMetadata({
@@ -57,10 +59,13 @@ export default async function CategoryPage({
         <p className="text-neutral-500 dark:text-neutral-400">{cat.desc}</p>
       </div>
 
+      {/* Financial Dashboard — only for economia */}
+      {slug === 'economia' && <FinancialDashboard />}
+
       {/* Hero */}
       {hero && (
         <div className="mb-8">
-          <HeroArticle item={hero} />
+          <HeroArticle item={hero} accentColor={getHeroAccent(slug)} />
         </div>
       )}
 
@@ -68,11 +73,11 @@ export default async function CategoryPage({
       <div className="mb-8 flex gap-8">
         <div className="min-w-0 flex-1">
           {grid.length > 0 && (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <AdaptiveGrid minItemWidth={280} className="gap-5">
               {grid.map((item) => (
                 <NewsCard key={item.id} item={item} />
               ))}
-            </div>
+            </AdaptiveGrid>
           )}
         </div>
         {beatJournalists.length > 0 && (
